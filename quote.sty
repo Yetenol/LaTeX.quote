@@ -1,31 +1,71 @@
-%%%%%%%%%% EXTEND QUOTE ENVIRONMENT %%%%%%%%%% 
-\ProvidesPackage{sty/quote}[2022-02-12 Display Quote Authors]
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{sty/quote}[Display Quote Authors]
 
-\newcommand{\inaccessiblesetauthor}{}
-\newcommand{\inaccessiblesetpage}{}
+\RequirePackage{etoolbox}       % add methods to an environment
 
-\let\oldquote\quote % override quote environment
-\let\endoldquote\endquote % override quote environment
+
+\makeatletter % Grant access to private commands (Name contains an @).
+
+
+% Give the internal start and end commands of the quote environment aliases to be able to call them later on.
+\let\@oldquote\quote        % begin{quote}
+\let\@endoldquote\endquote  % end{quote}
+
+
+% Modify environment \begin{quote}
+% - if set, display the author and page information below the quote
 \renewenvironment{quote}
 {
-    \oldquote % begin{quote}
-
-    % Define setauthor (only accessible inside the environment)
-    \renewcommand{\inaccessiblesetauthor}[1]
-    {
-        \def\author{##1}
-    }
-    \global\let\setauthor\inaccessiblesetauthor
-
-    % Define setpage (only accessible inside the environment)
-    \renewcommand{\inaccessiblesetpage}[1]
-    {
-        \def\page{##1}
-    }
-    \global\let\setpage\inaccessiblesetpage
+    \@oldquote % begin{quote}
 }
 {
-    \par\nobreak\smallskip\hfill(\author --- \page)
-    \endoldquote % end{quote}
+    \par\nobreak\smallskip\hfill(\authorstr --- \pagestr)
+    \@endoldquote % end{quote}
     \addvspace{\bigskipamount}
 }
+        
+        
+% Declare private methods.
+\newcommand{\@setauthor}{}
+\newcommand{\@setpage}{}
+\newcommand{\@APsetline}{}
+
+
+% Define public methods.
+\AtBeginEnvironment{quote}
+{
+    % Define method \author{author}
+    % - display the author below the quote
+    % - only accessible inside the environment (aka method)
+    % @param #1 Author's name to display
+    \renewcommand{\@setauthor}[1]
+    {
+        \newcommand\authorstr{#1}
+    }
+    \global\let\setauthor\@setauthor % Make the method public inside the environment.
+
+
+    % Define \page{page}
+    % - display the page number below the quote
+    % - only accessible inside the environment (aka method)
+    % @param #1 Page number(s) to display, e.g. 12 or 3--6
+    \renewcommand{\@setpage}[1]
+    {
+        \newcommand\pagestr{#1}
+    }
+    \global\let\setpage\@setpage % Make the method public inside the environment.
+
+
+    % % Define \line{line}
+    % % - display the line number below the quote
+    % % - only accessible inside the environment (aka method)
+    % % @param #1 line number(s) to display, e.g. 12 or 3--6
+    % \renewcommand{\@APsetline}[1]
+    % {
+    %     \def\linestr{#1}
+    % }
+    % \global\let\APsetline\@APsetline % Make the method public inside the environment.
+}
+
+
+\makeatother % Revoke access to private commands (Name contains an @).
