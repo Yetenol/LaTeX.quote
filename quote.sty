@@ -1,7 +1,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{sty/quote}[Display Quote Authors]
 
-\RequirePackage{etoolbox}       % add methods to an environment
+\RequirePackage{etoolbox}   % add methods to an environment
 
 
 \makeatletter % Grant access to private commands (Name contains an @).
@@ -11,6 +11,7 @@
 \let\@oldquote\quote        % begin{quote}
 \let\@endoldquote\endquote  % end{quote}
 
+\newcommand{\@hasMetaData}{}
 
 % Modify environment \begin{quote}
 % - if set, display the author and page information below the quote
@@ -19,9 +20,36 @@
     \@oldquote % begin{quote}
 }
 {
-    \par\nobreak\smallskip\hfill(\@sourcename{} --- Seite \@pagenumbers{} --- Zeile \@linenumbers{})
+    \par\nobreak\smallskip\hfill
+    (
+    \@ifundefined{@sourcename}{}
+    {
+        \@sourcename
+        \renewcommand{\@hasMetaData}{true}
+    }
+    \@ifundefined{@pagenumbers}{}
+    {
+        \@drawEmDash{}
+        Seite \@pagenumbers
+        \renewcommand{\@hasMetaData}{true}
+    }
+    ---
+    \@ifundefined{@linenumbers}{}
+    {
+        \@drawEmDash{}
+        Zeile \@linenumbers
+        \renewcommand{\@hasMetaData}{true}
+    }
+    )
+
     \@endoldquote % end{quote}
     \addvspace{\bigskipamount}
+}
+
+
+\newcommand{\@drawEmDash}
+{
+    \@ifundefined{@hasMetaData}{}{---}
 }
         
         
