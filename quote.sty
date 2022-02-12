@@ -19,52 +19,52 @@
     \@oldquote % begin{quote}
 }
 {
-    \par\nobreak\smallskip\hfill(\authorstr --- \pagestr)
+    \par\nobreak\smallskip\hfill(\@sourcename{} --- Seite \@pagenumbers{} --- Zeile \@linenumbers{})
     \@endoldquote % end{quote}
     \addvspace{\bigskipamount}
 }
         
         
 % Declare private methods.
-\newcommand{\@setauthor}{}
-\newcommand{\@setpage}{}
-\newcommand{\@APsetline}{}
+\newcommand{\@setsource}{}
+\newcommand{\@setpages}{}
+\newcommand{\@setlines}{}
 
 
 % Define public methods.
 \AtBeginEnvironment{quote}
 {
-    % Define method \author{author}
-    % - display the author below the quote
+    % Define method \source{source}
+    % - display the source below the quote
     % - only accessible inside the environment (aka method)
-    % @param #1 Author's name to display
-    \renewcommand{\@setauthor}[1]
+    % @param #1 Name of the source to display
+    \renewcommand{\@setsource}[1]
     {
-        \newcommand\authorstr{#1}
+        \newcommand\@sourcename{#1} % save name of the source
     }
-    \global\let\setauthor\@setauthor % Make the method public inside the environment.
+    \global\let\source\@setsource % Make the method public inside the environment.
 
 
     % Define \page{page}
     % - display the page number below the quote
     % - only accessible inside the environment (aka method)
     % @param #1 Page number(s) to display, e.g. 12 or 3--6
-    \renewcommand{\@setpage}[1]
+    \renewcommand{\@setpages}[1]
     {
-        \newcommand\pagestr{#1}
+        \newcommand\@pagenumbers{#1} % save page number(s)
     }
-    \global\let\setpage\@setpage % Make the method public inside the environment.
+    \global\let\pages\@setpages % Make the method public inside the environment.
 
 
-    % % Define \line{line}
-    % % - display the line number below the quote
-    % % - only accessible inside the environment (aka method)
-    % % @param #1 line number(s) to display, e.g. 12 or 3--6
-    % \renewcommand{\@APsetline}[1]
-    % {
-    %     \def\linestr{#1}
-    % }
-    % \global\let\APsetline\@APsetline % Make the method public inside the environment.
+    % Define \line{line}
+    % - display the line number below the quote
+    % - only accessible inside the environment (aka method)
+    % @param #1 Line number(s) to display, e.g. 12 or 3--6
+    \renewcommand{\@setlines}[1]
+    {
+        \newcommand\@linenumbers{#1} % save line number(s)
+    }
+    \global\let\lines\@setlines % Make the method public inside the environment.
 }
 
 
