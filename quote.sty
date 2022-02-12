@@ -19,37 +19,11 @@
     \@oldquote % begin{quote}
 }
 {
-    \par\nobreak\smallskip\hfill
-    (
-    \@ifundefined{@sourcename}{}%
-    {%
-        \@sourcename%
-        \def\@hasMetaData{}%
-    }%
-    \@ifundefined{@pagenumbers}{}%
-    {%
-        \@drawEmDash%
-        Seite \@pagenumbers%
-        \def\@hasMetaData{}%
-    }%
-    \@ifundefined{@linenumbers}{}%
-    {%
-        \@drawEmDash%
-        Zeile \@linenumbers%
-        \def\@hasMetaData{}%
-    }%
-    )
-
+    \@drawMetaData
     \@endoldquote % end{quote}
     \addvspace{\bigskipamount}
 }
-
-
-\newcommand{\@drawEmDash}
-{
-    \@ifundefined{@hasMetaData}{}{---}
-}
-        
+  
         
 % Declare private methods.
 \newcommand{\@setsource}{}
@@ -71,7 +45,7 @@
     \global\let\source\@setsource % Make the method public inside the environment.
 
 
-    % Define \page{page}
+    % Define method \page{page}
     % - display the page number below the quote
     % - only accessible inside the environment (aka method)
     % @param #1 Page number(s) to display, e.g. 12 or 3--6
@@ -82,7 +56,7 @@
     \global\let\pages\@setpages % Make the method public inside the environment.
 
 
-    % Define \line{line}
+    % Define method \line{line}
     % - display the line number below the quote
     % - only accessible inside the environment (aka method)
     % @param #1 Line number(s) to display, e.g. 12 or 3--6
@@ -91,6 +65,57 @@
         \newcommand\@linenumbers{#1} % save line number(s)
     }
     \global\let\lines\@setlines % Make the method public inside the environment.
+}
+
+
+% Define private function \@ifMetaData{true}
+% - run script only if any meta data was set
+% @param true   script to run if meta data was set
+\newcommand{\@ifMetaData}[1]
+{
+    \@ifundefined{@sourcename}{}{\def\@hasMetaData{}}
+    \@ifundefined{@pagenumbers}{}{\def\@hasMetaData{}}
+    \@ifundefined{@linenumbers}{}{\def\@hasMetaData{}}
+    \@ifundefined{@hasMetaData}{}{#1}
+}
+
+
+% Define private function \@drawMetaData
+% - draw the meta data about the quote
+% - private method (name contains an @)
+\newcommand{\@drawMetaData}
+{
+    \@ifMetaData
+    {
+        \par\nobreak\smallskip\hfill
+        (
+        \@ifundefined{@sourcename}{}%
+        {%
+            \@sourcename%
+            \def\@wroteMetaData{}% do a em-dash in front of next data
+        }%
+        \@ifundefined{@pagenumbers}{}%
+        {%
+            \@drawEmDash%
+            Seite \@pagenumbers%
+            \def\@wroteMetaData{}% do a em-dash in front of next data
+        }%
+        \@ifundefined{@linenumbers}{}%
+        {%
+            \@drawEmDash%
+            Zeile \@linenumbers%
+            \def\@wroteMetaData{}% do a em-dash in front of next data
+        }
+        )
+    }
+}
+
+
+% Define private function \@drawEmDash
+% - draw an em-dash if there is meta data to the left
+\newcommand{\@drawEmDash}
+{
+    \@ifundefined{@wroteMetaData}{}{---}
 }
 
 
