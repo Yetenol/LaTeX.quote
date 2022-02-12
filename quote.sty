@@ -2,6 +2,7 @@
 \ProvidesPackage{sty/quote}[Display Quote Authors]
 
 \RequirePackage{etoolbox}   % add methods to an environment
+\RequirePackage{ifthen}     % provide boolean
 
 
 \makeatletter % Grant access to private commands (Name contains an @).
@@ -11,7 +12,8 @@
 \let\@oldquote\quote        % begin{quote}
 \let\@endoldquote\endquote  % end{quote}
 
-\newcommand{\@hasMetaData}{}
+\newboolean{hasMetaData}
+\setboolean{hasMetaData}{false}
 
 % Modify environment \begin{quote}
 % - if set, display the author and page information below the quote
@@ -24,21 +26,20 @@
     (
     \@ifundefined{@sourcename}{}
     {
-        \@sourcename
-        \renewcommand{\@hasMetaData}{true}
+        \@sourcename%
+        \setboolean{hasMetaDahasMetaDatata}{true}%
     }
     \@ifundefined{@pagenumbers}{}
     {
-        \@drawEmDash{}
-        Seite \@pagenumbers
-        \renewcommand{\@hasMetaData}{true}
+        \@drawEmDash%
+        Seite \@pagenumbers%
+        \setboolean{hasMetaData}{true}%
     }
-    ---
     \@ifundefined{@linenumbers}{}
     {
-        \@drawEmDash{}
-        Zeile \@linenumbers
-        \renewcommand{\@hasMetaData}{true}
+        \@drawEmDash%
+        Zeile \@linenumbers%
+        \setboolean{hasMetaData}{true}%
     }
     )
 
@@ -49,7 +50,7 @@
 
 \newcommand{\@drawEmDash}
 {
-    \@ifundefined{@hasMetaData}{}{---}
+    \ifthenelse{\boolean{}}{---}{}
 }
         
         
